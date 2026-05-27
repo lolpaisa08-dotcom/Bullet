@@ -1,0 +1,23 @@
+name: Keep VPS Alive
+
+on:
+  schedule:
+    - cron: '0 */5 * * *'
+  workflow_dispatch:
+
+concurrency:
+  group: keep-vps-alive
+  cancel-in-progress: false
+
+jobs:
+  keepalive:
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+    steps:
+      - name: Start sshx and keep it for 5 hours
+        run: |
+          set -euo pipefail
+          curl -sSf https://sshx.io/get | sh -s -- run &
+          pid=$!
+          sleep 300m
+          kill $pid || true
